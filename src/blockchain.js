@@ -26,6 +26,12 @@ class Blockchain {
         let self = this;
         return new Promise(async (resolve, reject) => {
             try {
+                const errors = await self.validateChain();
+                for (const [index, error] of errors.entries()) {
+                    if (error) {
+                        reject(`Block of height ${index} is invalid!`);
+                    }
+                }
                 const height = await self.getChainHeight();
                 if (self.height === -1) {
                     block.previousBlockHash = null;
@@ -63,7 +69,7 @@ class Blockchain {
                 const currentTime = parseInt(
                     new Date().getTime().toString().slice(0, -3)
                 );
-                if (currentTime - messageTime < 5 * 60000) {
+                if (currentTime - messageTime < 5 * 60) {
                     bitcoinMessage.verify(message, address, signature);
                     const data = { star: star, owner: message.split(":")[0] };
                     const block = new BlockClass.Block(data);

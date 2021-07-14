@@ -142,7 +142,8 @@ class BlockchainController {
             try {
                 let hasError = await this.blockchain.validateChain();
                 if (hasError) {
-                    return res.status(202).json({ hasError: hasError });
+                    hasError.some(Boolean) ? res.status(500) : res.status(200);
+                    return res.json({ hasError: hasError });
                 } else {
                     res.status(404).send(
                         "There are no blocks in the blockchain."
