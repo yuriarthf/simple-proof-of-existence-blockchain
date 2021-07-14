@@ -70,12 +70,12 @@ class Blockchain {
                     new Date().getTime().toString().slice(0, -3)
                 );
                 if (currentTime - messageTime < 5 * 60) {
-                    bitcoinMessage.verify(message, address, signature);
+                    if (!bitcoinMessage.verify(message, address, signature))
+                        reject("Bitcoin message verification failed!");
                     const data = { star: star, owner: message.split(":")[0] };
                     const block = new BlockClass.Block(data);
                     await self._addBlock(block);
                     resolve(block);
-                    return;
                 }
                 reject("Time elapsed is greater or equal to 5 minutes");
             } catch (error) {
